@@ -1,0 +1,113 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Calendar, Users, Building2, Eye, Pencil, LayoutList } from 'lucide-react';
+import { cn } from '../../../../lib/utils';
+import StatusBadge from '../../../../components/ui/StatusBadge';
+
+const progressColors = {
+  publicado:  'bg-brand-500',
+  activo:     'bg-emerald-500',
+  cancelado:  'bg-rose-500',
+  finalizado: 'bg-slate-400',
+};
+
+const EventCard = ({
+  evento,
+  onVerDetalles,
+  formatFecha,
+  formatHora,
+  getEstadoEvento
+}) => {
+  const navigate = useNavigate();
+  const estado = getEstadoEvento(evento);
+  const fechaInicio = formatFecha(evento.fecha_inicio || evento.fecha);
+  const hora = formatHora(evento.hora);
+  const claseKey = (estado.clase || '').toLowerCase();
+  const progressCls = progressColors[claseKey] || 'bg-brand-500';
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 shadow-card hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+
+      <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold text-slate-800 truncate leading-snug">
+            {evento.titulo || 'Evento sin título'}
+          </h3>
+          <span className="text-xs text-slate-500 mt-0.5 block">
+            {evento.modalidad || 'Presencial'}
+          </span>
+        </div>
+        <StatusBadge status={claseKey} label={estado.texto} className="shrink-0" />
+      </div>
+
+      {estado.tieneProgreso && (
+        <div className="px-5 pb-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-xs text-slate-500">Ocupación</span>
+            <span className="text-xs font-semibold text-slate-700">{estado.porcentaje}%</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+            <div
+              className={cn('h-1.5 rounded-full transition-all', progressCls)}
+              style={{ width: `${estado.porcentaje}%` }}
+            />
+          </div>
+          <p className="text-xs text-slate-400 mt-1">
+            {estado.cuposOcupados} de {estado.cuposTotales} cupos ocupados
+          </p>
+        </div>
+      )}
+
+      {evento.descripcion && evento.descripcion !== 'Sin descripción disponible' && (
+        <div className="px-5 pb-3">
+          <p className="text-xs text-slate-500 line-clamp-2">{evento.descripcion}</p>
+        </div>
+      )}
+
+      <div className="px-5 pb-3 flex flex-wrap gap-x-4 gap-y-1">
+        <span className="flex items-center gap-1 text-xs text-slate-500">
+          <Calendar size={12} className="shrink-0" />
+          {fechaInicio}{hora ? ` — ${hora}` : ''}
+        </span>
+        {!estado.tieneProgreso && (
+          <span className="flex items-center gap-1 text-xs text-slate-500">
+            <Users size={12} className="shrink-0" />
+            {estado.cuposTotales > 0 ? `${estado.cuposTotales} cupos` : 'Sin límite'}
+          </span>
+        )}
+        {evento.creador && evento.creador !== 'No especificado' && (
+          <span className="flex items-center gap-1 text-xs text-slate-500">
+            <Building2 size={12} className="shrink-0" />
+            {typeof evento.creador === 'string' ? evento.creador : evento.creador?.nombre}
+          </span>
+        )}
+      </div>
+
+      <div className="mt-auto px-5 pb-5 flex gap-2">
+        <button
+          onClick={() => onVerDetalles(evento)}
+          className="flex-1 flex items-center justify-center gap-2 h-9 rounded-lg bg-brand-50 text-brand-700 text-xs font-semibold hover:bg-brand-100 transition-colors border border-brand-200"
+        >
+          <Eye size={14} />
+          Ver
+        </button>
+        <button
+          onClick={() => navigate(`/gerente/eventos/editar/${evento.id}`)}
+          className="flex-1 flex items-center justify-center gap-2 h-9 rounded-lg bg-slate-50 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition-colors border border-slate-200"
+        >
+          <Pencil size={14} />
+          Editar
+        </button>
+        <button
+          onClick={() => navigate(`/gerente/eventos/${evento.id}/agenda`)}
+          className="flex-1 flex items-center justify-center gap-2 h-9 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors border border-emerald-200"
+        >
+          <LayoutList size={14} />
+          Agenda
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default EventCard;

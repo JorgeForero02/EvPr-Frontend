@@ -1,0 +1,239 @@
+import { useState, useEffect } from 'react';
+import { locationsAPI } from '../../../services/api/locationsAPI';
+import { useNotifications } from './useNotifications';
+
+export const useLocations = () => {
+  const { showNotification, closeNotification, notifications } = useNotifications();
+  
+  const [state, setState] = useState({
+    ubicaciones: [],
+    empresa: null,
+    ciudades: [],
+    searchTerm: '',
+    loading: true,
+    sidebarCollapsed: false
+  });
+
+  const [modalState, setModalState] = useState({
+    showModal: false,
+    showEditModal: false,
+    showDeleteModal: false,
+    editingUbicacion: null,
+    deletingUbicacion: null
+  });
+
+  const [bloqueoState, setBloqueoState] = useState({
+    showBloqueoModal: false,
+    eventosBloqueantes: [],
+    ubicacionBloqueo: null
+  });
+
+  const [formData, setFormData] = useState({
+    lugar: '',
+    direccion: '',
+    capacidad: '',
+    descripcion: '',
+    id_ciudad: ''
+  });
+
+  useEffect(() => {
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const fetchData = async () => {
+    try {
+      setState(prev => ({ ...prev, loading: true }));
+      await Promise.all([
+        fetchCiudades(),
+        fetchEmpresaUsuario()
+      ]);
+    } catch (error) {
+      showNotification('error', 'Error', 'Error al cargar los datos iniciales');
+    } finally {
+      setState(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  const fetchEmpresaUsuario = async () => {
+    try {
+      const empresa = await locationsAPI.getEmpresaUsuario();
+      setState(prev => ({ ...prev, empresa }));
+      
+      if (empresa?.id) {
+        await fetchUbicacionesByEmpresa(empresa.id);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const fetchUbicacionesByEmpresa = async (empresaId) => {
+    try {
+      const ubicaciones = await locationsAPI.getUbicacionesByEmpresa(empresaId);
+      setState(prev => ({ ...prev, ubicaciones }));
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const fetchCiudades = async () => {
+    try {
+      const ciudades = await locationsAPI.getCiudades();
+      setState(prev => ({ ...prev, ciudades }));
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    try {
+      await locationsAPI.createUbicacion(state.empresa.id, formData);
+      showNotification('success', 'Éxito', 'Ubicación creada exitosamente');
+      closeAllModals();
+      await fetchUbicacionesByEmpresa(state.empresa.id);
+    } catch (error) {
+      showNotification('error', 'Error', error.message);
+    }
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await locationsAPI.updateUbicacion(modalState.editingUbicacion.id, formData);
+      showNotification('success', 'Éxito', 'Ubicación actualizada exitosamente');
+      closeAllModals();
+      await fetchUbicacionesByEmpresa(state.empresa.id);
+    } catch (error) {
+      showNotification('error', 'Error', error.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await locationsAPI.deleteUbicacion(modalState.deletingUbicacion.id);
+      showNotification('success', 'Éxito', 'Ubicación eliminada exitosamente');
+      closeAllModals();
+      await fetchUbicacionesByEmpresa(state.empresa.id);
+    } catch (error) {
+      showNotification('error', 'Error', error.message);
+    }
+  };
+
+  const handleToggle = async (ubicacion) => {
+    try {
+      await locationsAPI.toggleUbicacion(ubicacion.id);
+      const newActivo = ubicacion.activo === 0 || ubicacion.activo === false ? 1 : 0;
+      showNotification('success', 'Éxito', `Ubicación ${newActivo ? 'habilitada' : 'deshabilitada'} exitosamente`);
+      await fetchUbicacionesByEmpresa(state.empresa.id);
+    } catch (error) {
+      const eventos = error.data?.eventos || error.eventos || null;
+      if (eventos && eventos.length > 0) {
+        setBloqueoState({
+          showBloqueoModal: true,
+          eventosBloqueantes: eventos,
+          ubicacionBloqueo: ubicacion
+        });
+      } else {
+        showNotification('error', 'Error', error.message);
+      }
+    }
+  };
+
+  const closeBloqueoModal = () => {
+    setBloqueoState({ showBloqueoModal: false, eventosBloqueantes: [], ubicacionBloqueo: null });
+  };
+
+  const openCreateModal = () => {
+    setFormData({
+      lugar: '',
+      direccion: '',
+      capacidad: '',
+      descripcion: '',
+      id_ciudad: ''
+    });
+    setModalState(prev => ({ ...prev, showModal: true }));
+  };
+
+  const openEditModal = (ubicacion) => {
+    setFormData({
+      lugar: ubicacion.lugar || '',
+      direccion: ubicacion.direccion || '',
+      capacidad: ubicacion.capacidad || '',
+      descripcion: ubicacion.descripcion || '',
+      id_ciudad: ubicacion.id_ciudad || ''
+    });
+    setModalState(prev => ({ 
+      ...prev, 
+      showEditModal: true, 
+      editingUbicacion: ubicacion 
+    }));
+  };
+
+  const openDeleteModal = (ubicacion) => {
+    setModalState(prev => ({ 
+      ...prev, 
+      showDeleteModal: true, 
+      deletingUbicacion: ubicacion 
+    }));
+  };
+
+  const closeAllModals = () => {
+    closeBloqueoModal && setBloqueoState({ showBloqueoModal: false, eventosBloqueantes: [], ubicacionBloqueo: null });
+    setModalState({
+      showModal: false,
+      showEditModal: false,
+      showDeleteModal: false,
+      editingUbicacion: null,
+      deletingUbicacion: null
+    });
+    setFormData({
+      lugar: '',
+      direccion: '',
+      capacidad: '',
+      descripcion: '',
+      id_ciudad: ''
+    });
+  };
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSearchChange = (value) => {
+    setState(prev => ({ ...prev, searchTerm: value }));
+  };
+
+  const handleSidebarToggle = (collapsed) => {
+    setState(prev => ({ ...prev, sidebarCollapsed: collapsed }));
+  };
+
+  const filteredUbicaciones = state.ubicaciones.filter(ubicacion => {
+    const matchesSearch = state.searchTerm === '' ||
+      ubicacion.lugar?.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      ubicacion.direccion?.toLowerCase().includes(state.searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
+  return {
+    ...state,
+    filteredUbicaciones,
+    ...modalState,
+    formData,
+    handleCreate,
+    handleUpdate,
+    handleDelete,
+    handleToggle,
+    ...bloqueoState,
+    closeBloqueoModal,
+    openCreateModal,
+    openEditModal,
+    openDeleteModal,
+    closeAllModals,
+    handleInputChange,
+    handleSearchChange,
+    handleSidebarToggle,
+    notifications: Array.isArray(notifications) ? notifications : [],
+    closeNotification
+  };
+};

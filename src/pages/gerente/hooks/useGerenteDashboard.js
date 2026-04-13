@@ -1,0 +1,124 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { gerenteService } from '../../../services/gerenteService';
+import { API_URL } from '../../../config/apiConfig';
+
+export const useGerenteDashboard = () => {
+  const navigate = useNavigate();
+  const [state, setState] = useState({
+    user: null,
+    equipo: [],
+    stats: {
+      totalEmpleados: 0,
+      totalEventos: 0
+    },
+    empresa: null,
+    loading: true,
+    error: null
+  });
+
+  useEffect(() => {
+    initializeDashboard();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const initializeDashboard = async () => {
+    try {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+
+      const userData = localStorage.getItem('user');
+      const token = localStorage.getItem('access_token');
+
+      if (!userData || !token) {
+        navigate('/login');
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      setState(prev => ({ ...prev, user }));
+
+      await Promise.all([
+        loadTeam(user),
+        loadStats(user),
+        loadEmpresa(user)
+      ]);
+
+      setState(prev => ({ ...prev, loading: false }));
+
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        error: 'Error al cargar los datos del dashboard',
+        loading: false
+      }));
+    }
+  };
+
+  const loadTeam = async (user) => {
+    try {
+      if (!user?.rolData?.id_empresa) {
+        setState(prev => ({ ...prev, equipo: [] }));
+        return;
+      }
+
+      const equipo = await gerenteService.getTeam(user.rolData.id_empresa);
+      setState(prev => ({
+        ...prev,
+        equipo
+      }));
+    } catch (error) {
+      setState(prev => ({ ...prev, equipo: [] }));
+    }
+  };
+
+  const loadEmpresa = async (user) => {
+    try {
+      const id = user?.rolData?.id_empresa;
+      if (!id) return;
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`${API_URL}/empresas/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setState(prev => ({ ...prev, empresa: data.data }));
+      }
+    } catch (error) {
+    }
+  };
+
+  const loadStats = async (user) => {
+    try {
+      if (!user?.rolData?.id_empresa) {
+        return;
+      }
+
+      const stats = await gerenteService.getDashboardStats(user.rolData.id_empresa);
+      setState(prev => ({
+        ...prev,
+        stats: {
+          totalEmpleados: stats.totalEmpleados,
+          totalEventos: stats.totalEventos
+        }
+      }));
+    } catch (error) {
+      setState(prev => ({
+        ...prev,
+        stats: {
+          totalEmpleados: 0,
+          totalEventos: 0
+        }
+      }));
+    }
+  };
+
+  const reloadTeam = () => {
+    if (state.user) {
+      loadTeam(state.user);
+    }
+  };
+
+  return {
+    ...state,
+    reloadTeam
+  };
+};
