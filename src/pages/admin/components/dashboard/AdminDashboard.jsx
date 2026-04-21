@@ -3,6 +3,7 @@ import AffiliationMetrics from './AffiliationMetrics';
 import AuditMetrics from './AuditMetrics';
 import SystemStatsMetrics from './SystemStatsMetrics';
 import EventosGlobalesDashboard from './EventosGlobalesDashboard';
+import MetricasAgregadasDashboard from './MetricasAgregadasDashboard';
 
 const AdminDashboard = () => {
     const {
@@ -30,6 +31,8 @@ const AdminDashboard = () => {
                 />
 
                 <EventosGlobalesDashboard />
+
+                <MetricasAgregadasDashboard />
 
                 <AffiliationMetrics
                     data={dashboardData.afiliaciones}
