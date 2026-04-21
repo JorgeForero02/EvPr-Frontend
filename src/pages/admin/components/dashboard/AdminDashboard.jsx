@@ -2,6 +2,7 @@ import { useAdminDashboard } from '../../hooks/useAdminDashboard';
 import AffiliationMetrics from './AffiliationMetrics';
 import AuditMetrics from './AuditMetrics';
 import SystemStatsMetrics from './SystemStatsMetrics';
+import EventosGlobalesDashboard from './EventosGlobalesDashboard';
 
 const AdminDashboard = () => {
     const {
@@ -27,6 +28,8 @@ const AdminDashboard = () => {
                     data={dashboardData.stats}
                     loading={loading}
                 />
+
+                <EventosGlobalesDashboard />
 
                 <AffiliationMetrics
                     data={dashboardData.afiliaciones}
