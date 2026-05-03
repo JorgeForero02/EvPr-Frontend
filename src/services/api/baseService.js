@@ -59,6 +59,13 @@ export class BaseService {
             throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
           }
 
+          if (response.status === 403) {
+            const err = new Error('No tienes permiso para realizar esta acción.');
+            err.status = 403;
+            err.data = parsed;
+            throw err;
+          }
+
           const message = this.getErrorMessage(parsed) || `HTTP ${response.status}: ${response.statusText}`;
           const err = new Error(message);
           err.status = response.status;

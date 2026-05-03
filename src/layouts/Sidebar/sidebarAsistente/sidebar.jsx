@@ -6,6 +6,7 @@ import {
     FileText,
     LayoutDashboard,
     BookOpen,
+    UserCircle,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import SharedSidebar from '../SharedSidebar';
@@ -16,6 +17,7 @@ const navItems = [
     { id: 'agenda',          path: '/asistente/agenda',          label: 'Agenda',             Icon: ClipboardList   },
     { id: 'inscripciones',   path: '/asistente/inscripciones',   label: 'Mis Inscripciones',  Icon: BookOpen        },
     { id: 'encuestas',       path: '/asistente/encuestas',       label: 'Encuestas',          Icon: FileText        },
+    { id: 'perfil',          path: '/asistente/perfil',          label: 'Mi Perfil',          Icon: UserCircle      },
 ];
 
 const Sidebar = ({ onToggle }) => {
@@ -25,23 +27,35 @@ const Sidebar = ({ onToggle }) => {
         localStorage.removeItem('user');
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        localStorage.removeItem('empresa_pendiente');
+        sessionStorage.clear();
         navigate('/login');
     };
+
+    const empresaPendiente = (() => {
+        try { return JSON.parse(localStorage.getItem('empresa_pendiente')); } catch { return null; }
+    })();
 
     const footerSlot = (isCollapsed) =>
         !isCollapsed ? (
             <p className="text-xs text-white/40 px-3 py-1">
-                <span
-                    onClick={() => navigate('/asistente/empresa')}
-                    role="button"
-                    tabIndex={0}
-                    onKeyPress={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') navigate('/asistente/empresa');
-                    }}
-                    className={cn('cursor-pointer hover:text-white/70 transition-colors duration-200')}
-                >
-                    ¿Quieres registrar tu empresa?
-                </span>
+                {empresaPendiente ? (
+                    <span className="text-amber-300/70">
+                        Empresa <strong>{empresaPendiente.nombre}</strong> — en revisión
+                    </span>
+                ) : (
+                    <span
+                        onClick={() => navigate('/asistente/empresa')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') navigate('/asistente/empresa');
+                        }}
+                        className={cn('cursor-pointer hover:text-white/70 transition-colors duration-200')}
+                    >
+                        ¿Quieres registrar tu empresa?
+                    </span>
+                )}
             </p>
         ) : null;
 

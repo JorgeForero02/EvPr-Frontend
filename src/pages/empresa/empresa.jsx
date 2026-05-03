@@ -237,6 +237,7 @@ const Empresa = () => {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        localStorage.setItem('empresa_pendiente', JSON.stringify({ nombre: formData.nombre, estado: 'pendiente' }));
         setShowSuccessModal(true);
       } else {
         setError(result.message || 'Error al crear la empresa');

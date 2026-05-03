@@ -264,7 +264,7 @@ const Dashboard = () => {
                     <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
                         <div className="flex justify-between items-center pb-4 mb-5 border-b border-slate-100">
                             <h2 className="text-base font-semibold text-slate-800">Eventos Disponibles</h2>
-                            <Badge variant="secondary">{eventosRecientes.length}</Badge>
+                            <Badge variant="secondary">{metricas.totalEventos}</Badge>
                         </div>
 
                         {eventosRecientes.length === 0 ? (

@@ -229,11 +229,7 @@ export const useEncuestas = () => {
     }, [encuestas]);
 
     const obtenerEstadoEncuesta = useCallback((encuesta) => {
-        console.log({
-            id: encuesta.id,
-            tieneRespuestas: !!encuesta.respuestas,
-            respuestas: encuesta.respuestas
-        });
+        if (process.env.NODE_ENV === 'development') console.log({ id: encuesta.id, tieneRespuestas: !!encuesta.respuestas, respuestas: encuesta.respuestas });
 
         const userId = getUserId();
         if (!userId) {
@@ -257,10 +253,7 @@ export const useEncuestas = () => {
             respuesta => respuesta.id_asistente === userId
         );
 
-        console.log({
-            userId,
-            respuesta: respuestaAsistente
-        });
+        if (process.env.NODE_ENV === 'development') console.log({ userId, respuesta: respuestaAsistente });
 
         if (!respuestaAsistente) {
             return { estado: 'no_enviada', texto: 'No enviada' };

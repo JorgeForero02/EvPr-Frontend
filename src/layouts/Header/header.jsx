@@ -29,9 +29,15 @@ const Header = ({ isMenuCollapsed }) => {
     .join('') || 'U';
 
   const handleLogoClick = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    navigate('/login');
+    const rol = user?.rol;
+    const dashboards = {
+      asistente:     '/asistente/dashboard',
+      organizador:   '/organizador/dashboard',
+      gerente:       '/gerente/dashboard',
+      administrador: '/admin/dashboard',
+      ponente:       '/ponente/dashboard',
+    };
+    navigate(dashboards[rol] || '/login');
   };
 
   return (
@@ -41,7 +47,7 @@ const Header = ({ isMenuCollapsed }) => {
         className="flex items-center gap-2 text-brand-600 hover:text-brand-700 transition-colors"
         onClick={handleLogoClick}
         type="button"
-        title="Cerrar sesión"
+        title="Ir al inicio"
       >
         <CalendarDays size={22} className="shrink-0" />
         <span className="font-bold text-sm hidden sm:inline tracking-tight">Event Planner</span>

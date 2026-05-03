@@ -24,6 +24,7 @@ const PATH_TO_VIEW = {
     '/asistente/encuestas':     'encuestas',
     '/asistente/inscripciones': 'misInscripciones',
     '/asistente/dashboard':     'dashboard',
+    '/asistente/perfil':        'perfil',
 };
 
 const AsistentePanel = () => {
@@ -182,7 +183,7 @@ const AsistentePanel = () => {
         }
 
         const estado = getEventStatus(evento, eventosInscritos);
-        if (estado.texto !== 'DISPONIBLE' && estado.texto !== 'POR COMENZAR') {
+        if (estado.texto !== 'DISPONIBLE' && estado.texto !== 'POR COMENZAR' && estado.texto !== 'PRÓXIMO') {
             showSnackbar('No es posible inscribirse en este evento porque está lleno o cerrado.', 'warning');
             return;
         }
@@ -243,6 +244,15 @@ const AsistentePanel = () => {
             showSnackbar('Asistencia registrada exitosamente', 'success');
         } catch (error) {
             showSnackbar(error.message, 'error');
+        }
+    };
+
+    const handleCancelarInscripcionConFeedback = async (inscripcion) => {
+        try {
+            await handleCancelarInscripcion(inscripcion);
+            showSnackbar('Inscripción cancelada exitosamente', 'success');
+        } catch (error) {
+            showSnackbar(error.message || 'Error al cancelar la inscripción', 'error');
         }
     };
 
@@ -434,7 +444,7 @@ const AsistentePanel = () => {
                             inscripcionRegistrando={inscripcionRegistrando}
                             handleRegistrarAsistencia={handleRegistrarAsistenciaDirecta}
                             puedeRegistrarAsistencia={puedeRegistrarAsistencia}
-                            handleCancelarInscripcion={handleCancelarInscripcion}
+                            handleCancelarInscripcion={handleCancelarInscripcionConFeedback}
                             puedeCancelar={puedeCancelar}
                             formatFecha={formatFecha}
                             formatHora={formatHora}
@@ -474,6 +484,34 @@ const AsistentePanel = () => {
                                 cargandoActividades={cargandoActividades}
                             />
                         )}
+                    </div>
+                );
+
+            case 'perfil':
+                return (
+                    <div className="flex-1 p-8 bg-slate-50">
+                        <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+                            <h1 className="text-2xl font-bold text-slate-800 mb-1">Mi Perfil</h1>
+                            <p className="text-sm text-slate-500 mb-6">Información de tu cuenta</p>
+                            {userData ? (
+                                <div className="space-y-4 max-w-md">
+                                    <div>
+                                        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Nombre</p>
+                                        <p className="text-sm text-slate-800 mt-1">{userData.nombre || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Correo</p>
+                                        <p className="text-sm text-slate-800 mt-1">{userData.email || '—'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Teléfono</p>
+                                        <p className="text-sm text-slate-800 mt-1">{userData.telefono || '—'}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-slate-500">Cargando información...</p>
+                            )}
+                        </div>
                     </div>
                 );
 

@@ -12,10 +12,7 @@ export const useInscriptions = () => {
     const [inscripcionRegistrando, setInscripcionRegistrando] = useState(null);
 
     const getToken = () => {
-        const accessToken = localStorage.getItem('access_token');
-        const token = localStorage.getItem('token');
-        const authToken = localStorage.getItem('auth_token');
-        return accessToken || token || authToken;
+        return localStorage.getItem('access_token');
     };
 
     const cargarMisInscripciones = async () => {
@@ -47,7 +44,8 @@ export const useInscriptions = () => {
                         fecha_fin: item.evento.fecha_fin,
                         modalidad: item.evento.modalidad,
                         hora: item.evento.hora,
-                        lugar: item.evento.lugar
+                        lugar: item.evento.lugar,
+                        actividades: item.evento.actividades || []
                     };
                 }
 

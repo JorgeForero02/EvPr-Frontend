@@ -218,14 +218,7 @@ export const useEvents = () => {
   const getEstadoEvento = (evento) => {
     const cuposTotales = evento.cupo_total || 0;
 
-    console.log({
-      titulo: evento.titulo,
-      estado: evento.estado,
-      estado_texto: evento.estado_texto,
-      cupo_total: cuposTotales,
-      cupos_disponibles: evento.cupos_disponibles,
-      tieneCuposDisponibles: evento.cupos_disponibles !== undefined
-    });
+    if (process.env.NODE_ENV === 'development') console.log({ titulo: evento.titulo, estado: evento.estado, estado_texto: evento.estado_texto, cupo_total: cuposTotales, cupos_disponibles: evento.cupos_disponibles });
 
     if (evento.estado !== 1) {
       return {

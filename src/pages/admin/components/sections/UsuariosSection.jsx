@@ -5,6 +5,7 @@ import { useAuth } from '../../../../contexts/AuthContext';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 const ROLES_DEFAULT = [
+    { id: 1, nombre: 'Administrador', tipo: 'administrador' },
     { id: 2, nombre: 'Gerente', tipo: 'gerente' },
     { id: 3, nombre: 'Organizador', tipo: 'organizador' },
     { id: 4, nombre: 'Ponente', tipo: 'ponente' },
@@ -1018,6 +1019,7 @@ const UsuariosSection = () => {
                             )}
 
                             <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 mt-2">
+                                {selectedUsuario.rol !== 'administrador' && (
                                 <button
                                     onClick={() => handleToggleStatus(selectedUsuario.id, selectedUsuario.nombre, selectedUsuario.activo)}
                                     disabled={loadingStatus}
@@ -1043,6 +1045,7 @@ const UsuariosSection = () => {
                                         </>
                                     )}
                                 </button>
+                                )}
 
                                 <button
                                     onClick={() => setShowViewModal(false)}

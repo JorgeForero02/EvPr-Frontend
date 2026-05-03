@@ -17,7 +17,11 @@ export const getEventStatus = (evento, eventosInscritos) => {
     }
 
     if (fechaInicio > hoy) {
-        return { texto: 'POR COMENZAR', clase: 'disponible' };
+        const diasRestantes = Math.ceil((fechaInicio - hoy) / (1000 * 60 * 60 * 24));
+        if (diasRestantes <= 3) {
+            return { texto: 'POR COMENZAR', clase: 'disponible' };
+        }
+        return { texto: 'PRÓXIMO', clase: 'disponible' };
     }
 
     return { texto: 'DISPONIBLE', clase: 'disponible' };

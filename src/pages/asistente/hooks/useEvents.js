@@ -9,11 +9,7 @@ export const useEvents = () => {
   const [filtroCategoria, setFiltroCategoria] = useState('');
 
   const getToken = () => {
-    const accessToken = localStorage.getItem('access_token');
-    const token = localStorage.getItem('token');
-    const authToken = localStorage.getItem('auth_token');
-
-    return accessToken || token || authToken;
+    return localStorage.getItem('access_token');
   };
 
   const cargarEventosDisponibles = async () => {

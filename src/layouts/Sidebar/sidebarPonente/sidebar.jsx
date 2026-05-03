@@ -22,6 +22,7 @@ const Sidebar = ({ onToggle }) => {
         localStorage.removeItem('user');
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
+        sessionStorage.clear();
         navigate('/login');
     };
 
