@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 
 const ChatbotWidget = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const [open, setOpen] = useState(false);
     const [iaAbierta, setIaAbierta] = useState(false);
     const [messages, setMessages] = useState([
@@ -23,6 +23,13 @@ const ChatbotWidget = () => {
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         return () => observer.disconnect();
     }, []);
+
+    useEffect(() => {
+        setMessages([
+            { role: 'bot', text: 'Hola, soy el asistente de EventPlanner. ¿En qué puedo ayudarte?' }
+        ]);
+        setOpen(false);
+    }, [user?.id, user?.rol]);
 
     useEffect(() => {
         if (open && bottomRef.current) {
