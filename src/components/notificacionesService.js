@@ -48,24 +48,21 @@ export async function obtenerNotificacionesPorEstadoSolicitud(estadoSolicitud) {
             n.datos_adicionales?.id_actividad
         );
 
-        const notificacionesConEstado = await Promise.all(
-            notificacionesTipo1.map(async (notif) => {
-                try {
-                    const asignacion = await obtenerAsignacion(
-                        notif.datos_adicionales.id_ponente,
-                        notif.datos_adicionales.id_actividad
-                    );
-
-                    const asignacionData = asignacion.data || asignacion;
-                    return {
-                        ...notif,
-                        estado_solicitud: asignacionData.estado_solicitud
-                    };
-                } catch (error) {
-                    return null;
-                }
-            })
-        );
+        const notificacionesConEstado = [];
+        for (const notif of notificacionesTipo1) {
+            try {
+                const asignacion = await obtenerAsignacion(
+                    notif.datos_adicionales.id_ponente,
+                    notif.datos_adicionales.id_actividad
+                );
+                const asignacionData = asignacion.data || asignacion;
+                notificacionesConEstado.push({
+                    ...notif,
+                    estado_solicitud: asignacionData.estado_solicitud
+                });
+            } catch (error) {
+            }
+        }
 
         return notificacionesConEstado.filter(n =>
             n && n.estado_solicitud === estadoSolicitud

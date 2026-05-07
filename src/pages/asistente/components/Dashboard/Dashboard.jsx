@@ -39,16 +39,18 @@ const Dashboard = () => {
 
             const eventosDisponibles = await eventService.getAvailableEvents(token);
 
-            const actividadesProximas = await agendaService.obtenerActividadesPorFecha(
+            const todasActividades = await agendaService.obtenerActividadesPorFecha(
                 inscripciones,
                 token,
-                'proximas'
+                'todas'
             );
 
-            const actividadesDelDia = await agendaService.obtenerActividadesPorFecha(
-                inscripciones,
-                token,
-                'hoy'
+            const hoy = new Date().toISOString().split('T')[0];
+            const actividadesProximas = todasActividades.filter(a =>
+                new Date(a.fecha_actividad + 'T' + a.hora_inicio) >= new Date()
+            );
+            const actividadesDelDia = todasActividades.filter(a =>
+                a.fecha_actividad === hoy
             );
 
             setProximasActividades(actividadesProximas.slice(0, 5));

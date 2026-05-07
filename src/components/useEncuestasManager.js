@@ -104,25 +104,26 @@ export const useEncuestasManager = () => {
             listaEncuestas = data.encuestas;
         }
 
-        const encuestasConEstadisticas = await Promise.all(
-            listaEncuestas.map(async (encuesta) => {
-                try {
-                    const statsResponse = await fetch(
-                        `${API_URL}/encuestas/${encuesta.id}/estadisticas`,
-                        { method: 'GET', headers: getHeaders() }
-                    );
-                    if (statsResponse.ok) {
-                        const stats = await statsResponse.json();
-                        return {
-                            ...encuesta,
-                            total_completadas: stats.total_completadas || stats.data?.total_completadas || 0
-                        };
-                    }
-                } catch {
+        const encuestasConEstadisticas = [];
+        for (const encuesta of listaEncuestas) {
+            try {
+                const statsResponse = await fetch(
+                    `${API_URL}/encuestas/${encuesta.id}/estadisticas`,
+                    { method: 'GET', headers: getHeaders() }
+                );
+                if (statsResponse.ok) {
+                    const stats = await statsResponse.json();
+                    encuestasConEstadisticas.push({
+                        ...encuesta,
+                        total_completadas: stats.total_completadas || stats.data?.total_completadas || 0
+                    });
+                } else {
+                    encuestasConEstadisticas.push({ ...encuesta, total_completadas: 0 });
                 }
-                return { ...encuesta, total_completadas: 0 };
-            })
-        );
+            } catch {
+                encuestasConEstadisticas.push({ ...encuesta, total_completadas: 0 });
+            }
+        }
 
         setEncuestas(encuestasConEstadisticas);
     } catch (error) {

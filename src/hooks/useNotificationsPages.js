@@ -107,11 +107,11 @@ export const useNotificaciones = () => {
                 throw new Error('No hay token disponible');
             }
 
-            const promesas = notificaciones
-                .filter(notif => notif.estado === 'no_leida' || notif.estado === 'pendiente')
-                .map(notif => notificacionService.marcarComoLeida(notif.id, token));
-
-            await Promise.all(promesas);
+            for (const notif of notificaciones) {
+                if (notif.estado === 'no_leida' || notif.estado === 'pendiente') {
+                    await notificacionService.marcarComoLeida(notif.id, token);
+                }
+            }
 
             setNotificaciones(prev =>
                 prev.map(notif =>

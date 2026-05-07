@@ -7,11 +7,11 @@ export const agendaService = {
                 return [];
             }
 
-            const actividadesPromises = misInscripciones.map(async (inscripcion) => {
+            const todasActividades = [];
+            for (const inscripcion of misInscripciones) {
                 try {
                     const actividadesEvento = await this.obtenerActividadesEvento(inscripcion.evento.id, token);
-
-                    return actividadesEvento.map(actividad => ({
+                    todasActividades.push(...actividadesEvento.map(actividad => ({
                         ...actividad,
                         evento: {
                             id: inscripcion.evento.id,
@@ -28,16 +28,12 @@ export const agendaService = {
                             estado: inscripcion.estado,
                             fecha_inscripcion: inscripcion.fecha_inscripcion
                         }
-                    }));
+                    })));
                 } catch (error) {
-                    return [];
                 }
-            });
+            }
 
-            const todasActividades = await Promise.all(actividadesPromises);
-            const actividadesPlanas = todasActividades.flat();
-
-            const actividadesOrdenadas = actividadesPlanas.sort((a, b) => {
+            const actividadesOrdenadas = todasActividades.sort((a, b) => {
                 const fechaA = new Date(`${a.fecha_actividad}T${a.hora_inicio}`);
                 const fechaB = new Date(`${b.fecha_actividad}T${b.hora_inicio}`);
                 return fechaA - fechaB;
