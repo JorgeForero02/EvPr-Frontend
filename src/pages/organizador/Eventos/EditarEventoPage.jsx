@@ -185,6 +185,7 @@ const EditarEventoPage = () => {
                                     type="date"
                                     value={formData.fecha_inicio}
                                     onChange={(e) => handleInputChange('fecha_inicio', e.target.value)}
+                                    max="2099-12-31"
                                     required
                                 />
                             </div>
@@ -209,6 +210,7 @@ const EditarEventoPage = () => {
                                 type="date"
                                 value={formData.fecha_fin}
                                 onChange={(e) => handleInputChange('fecha_fin', e.target.value)}
+                                max="2099-12-31"
                                 required
                             />
                         </div>

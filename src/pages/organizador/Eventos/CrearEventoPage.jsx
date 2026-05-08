@@ -238,6 +238,8 @@ const CrearEventoPage = () => {
                                 type="date"
                                 value={fixDate(formData.fecha_inicio)}
                                 onChange={(e) => handleInputChange("fecha_inicio", e.target.value)}
+                                min={new Date().toISOString().split('T')[0]}
+                                max="2099-12-31"
                                 required
                             />
                         </div>
@@ -251,6 +253,8 @@ const CrearEventoPage = () => {
                                 type="date"
                                 value={fixDate(formData.fecha_fin)}
                                 onChange={(e) => handleInputChange("fecha_fin", e.target.value)}
+                                min={formData.fecha_inicio || new Date().toISOString().split('T')[0]}
+                                max="2099-12-31"
                                 required
                             />
                         </div>

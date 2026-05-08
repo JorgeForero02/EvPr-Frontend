@@ -198,6 +198,8 @@ const CrearEvento = () => {
                                     type="date"
                                     value={formData.fecha_inicio}
                                     onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    max="2099-12-31"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                                 />
                             </div>
@@ -211,6 +213,8 @@ const CrearEvento = () => {
                                     type="date"
                                     value={formData.fecha_fin}
                                     onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })}
+                                    min={formData.fecha_inicio || new Date().toISOString().split('T')[0]}
+                                    max="2099-12-31"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                                 />
                             </div>
