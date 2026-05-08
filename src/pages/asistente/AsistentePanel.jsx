@@ -107,22 +107,21 @@ const AsistentePanel = () => {
     const eventosFiltradosFinal = filtrarEventosPorBusqueda(eventosFiltrados);
 
     useEffect(() => {
-        const checkAuth = () => {
+        const init = async () => {
             const accessToken = localStorage.getItem('access_token');
             const token = localStorage.getItem('token');
             const authToken = localStorage.getItem('auth_token');
-
             const hasToken = accessToken || token || authToken;
 
             if (!hasToken) {
                 window.location.href = '/login';
                 return;
             }
-        };
 
-        checkAuth();
-        await cargarEventosDisponibles();
-        await cargarMisInscripciones();
+            await cargarEventosDisponibles();
+            await cargarMisInscripciones();
+        };
+        init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
