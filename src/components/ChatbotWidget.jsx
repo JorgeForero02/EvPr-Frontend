@@ -15,6 +15,19 @@ const ChatbotWidget = () => {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const bottomRef = useRef(null);
+    const prevUserId = useRef(null);
+
+    useEffect(() => {
+        const currentId = user?.id || null;
+        if (prevUserId.current !== currentId) {
+            setMessages([
+                { role: 'bot', text: 'Hola, soy el asistente de EventPlanner. ¿En qué puedo ayudarte?' }
+            ]);
+            setOpen(false);
+            setInput('');
+        }
+        prevUserId.current = currentId;
+    }, [user?.id]);
 
     useEffect(() => {
         const observer = new MutationObserver(() => {
@@ -23,13 +36,6 @@ const ChatbotWidget = () => {
         observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
         return () => observer.disconnect();
     }, []);
-
-    useEffect(() => {
-        setMessages([
-            { role: 'bot', text: 'Hola, soy el asistente de EventPlanner. ¿En qué puedo ayudarte?' }
-        ]);
-        setOpen(false);
-    }, [user?.id, user?.rol]);
 
     useEffect(() => {
         if (open && bottomRef.current) {

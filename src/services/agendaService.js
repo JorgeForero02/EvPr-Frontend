@@ -11,6 +11,7 @@ export const agendaService = {
             for (const inscripcion of misInscripciones) {
                 try {
                     const actividadesEvento = await this.obtenerActividadesEvento(inscripcion.evento.id, token);
+                    await new Promise(r => setTimeout(r, 300));
                     todasActividades.push(...actividadesEvento.map(actividad => ({
                         ...actividad,
                         evento: {

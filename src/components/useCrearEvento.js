@@ -235,6 +235,7 @@ export const useEvento = (idEvento = null) => {
                 act.id
                     ? await actualizarActividad(act.id, act)
                     : await crearActividad(eventoId, act);
+                await new Promise(r => setTimeout(r, 300));
             }
 
             setMostrarModalExito(true);
