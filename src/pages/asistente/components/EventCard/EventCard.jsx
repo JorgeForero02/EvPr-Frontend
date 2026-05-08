@@ -18,6 +18,7 @@ const statusToKey = (texto) => {
         case 'CUPOS AGOTADOS': return 'cerrada';
         case 'FINALIZADO': return 'finalizado';
         case 'POR COMENZAR': return 'publicado';
+        case 'PRÓXIMO': return 'publicado';
         case 'DISPONIBLE': return 'activo';
         default: return 'borrador';
     }
@@ -31,7 +32,7 @@ const EventCard = ({ evento, estado, onViewDetails, onInscribe, formatFecha, for
         ? Math.round((evento.cupos_disponibles / evento.cupo_total) * 100)
         : 0;
 
-    const canInscribe = estado.texto === 'DISPONIBLE' || estado.texto === 'POR COMENZAR';
+    const canInscribe = estado.texto === 'POR COMENZAR' || estado.texto === 'PRÓXIMO';
     const isInscrito = estado.texto === 'INSCRITO';
 
     return (
