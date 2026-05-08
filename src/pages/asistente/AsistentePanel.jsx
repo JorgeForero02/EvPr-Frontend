@@ -267,43 +267,26 @@ const AsistentePanel = () => {
 
         setCargandoActividades(true);
         try {
-            const token = localStorage.getItem('access_token') || localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No hay token disponible');
-            }
-
             const actividades = [];
 
             for (const inscripcion of misInscripciones) {
-                try {
-                    const eventId = inscripcion.id_evento || inscripcion.evento?.id;
+                const evento = inscripcion.evento;
+                if (!evento?.actividades) continue;
 
-                    if (!eventId) {
-                        continue;
-                    }
-
-                    const eventoDetalle = await eventService.getEventDetails(eventId, token);
-
-                    if (eventoDetalle.actividades && eventoDetalle.actividades.length > 0) {
-                        eventoDetalle.actividades.forEach(actividad => {
-                            const actividadInfo = {
-                                id_actividad: actividad.id_actividad,
-                                titulo: actividad.titulo,
-                                fecha_actividad: actividad.fecha_actividad,
-                                hora_inicio: actividad.hora_inicio,
-                                hora_fin: actividad.hora_fin,
-                                descripcion: actividad.descripcion,
-                                id_evento: eventoDetalle.id,
-                                evento_titulo: eventoDetalle.titulo,
-                                evento_fecha_inicio: eventoDetalle.fecha_inicio,
-                                evento_fecha_fin: eventoDetalle.fecha_fin,
-                                lugares: actividad.lugares || []
-                            };
-                            actividades.push(actividadInfo);
-                        });
-                    }
-                } catch (error) {
-                    continue;
+                for (const actividad of evento.actividades) {
+                    actividades.push({
+                        id_actividad: actividad.id_actividad,
+                        titulo: actividad.titulo,
+                        fecha_actividad: actividad.fecha_actividad,
+                        hora_inicio: actividad.hora_inicio,
+                        hora_fin: actividad.hora_fin,
+                        descripcion: actividad.descripcion,
+                        id_evento: evento.id,
+                        evento_titulo: evento.titulo,
+                        evento_fecha_inicio: evento.fecha_inicio,
+                        evento_fecha_fin: evento.fecha_fin,
+                        lugares: actividad.lugares || []
+                    });
                 }
             }
 

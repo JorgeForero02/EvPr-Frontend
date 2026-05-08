@@ -1,50 +1,48 @@
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
 
 export const agendaService = {
-    async obtenerActividadesAgenda(misInscripciones, token) {
-        try {
-            if (!misInscripciones || misInscripciones.length === 0) {
-                return [];
-            }
-
-            const todasActividades = [];
-            for (const inscripcion of misInscripciones) {
-                try {
-                    const actividadesEvento = await this.obtenerActividadesEvento(inscripcion.evento.id, token);
-                    await new Promise(r => setTimeout(r, 300));
-                    todasActividades.push(...actividadesEvento.map(actividad => ({
-                        ...actividad,
-                        evento: {
-                            id: inscripcion.evento.id,
-                            titulo: inscripcion.evento.titulo,
-                            modalidad: inscripcion.evento.modalidad,
-                            descripcion: inscripcion.evento.descripcion,
-                            estado_evento: inscripcion.evento.estado_evento,
-                            empresa: inscripcion.evento.empresa,
-                            creador: inscripcion.evento.creador
-                        },
-                        inscripcion: {
-                            id: inscripcion.id,
-                            codigo: inscripcion.codigo,
-                            estado: inscripcion.estado,
-                            fecha_inscripcion: inscripcion.fecha_inscripcion
-                        }
-                    })));
-                } catch (error) {
-                }
-            }
-
-            const actividadesOrdenadas = todasActividades.sort((a, b) => {
-                const fechaA = new Date(`${a.fecha_actividad}T${a.hora_inicio}`);
-                const fechaB = new Date(`${b.fecha_actividad}T${b.hora_inicio}`);
-                return fechaA - fechaB;
-            });
-
-            return actividadesOrdenadas;
-
-        } catch (error) {
-            throw error;
+    obtenerActividadesAgendaLocal(misInscripciones) {
+        if (!misInscripciones || misInscripciones.length === 0) {
+            return [];
         }
+
+        const todasActividades = [];
+        for (const inscripcion of misInscripciones) {
+            const evento = inscripcion.evento;
+            if (!evento?.actividades) continue;
+            for (const act of evento.actividades) {
+                todasActividades.push({
+                    id_actividad: act.id_actividad,
+                    titulo: act.titulo,
+                    descripcion: act.descripcion,
+                    hora_inicio: act.hora_inicio,
+                    hora_fin: act.hora_fin,
+                    fecha_actividad: act.fecha_actividad,
+                    lugares: act.lugares || [],
+                    evento: {
+                        id: evento.id,
+                        titulo: evento.titulo,
+                        modalidad: evento.modalidad,
+                        descripcion: evento.descripcion,
+                        estado_evento: evento.estado_evento,
+                        empresa: evento.empresa,
+                        creador: evento.creador
+                    },
+                    inscripcion: {
+                        id: inscripcion.id,
+                        codigo: inscripcion.codigo,
+                        estado: inscripcion.estado,
+                        fecha_inscripcion: inscripcion.fecha_inscripcion
+                    }
+                });
+            }
+        }
+
+        return todasActividades.sort((a, b) => {
+            const fechaA = new Date(`${a.fecha_actividad}T${a.hora_inicio}`);
+            const fechaB = new Date(`${b.fecha_actividad}T${b.hora_inicio}`);
+            return fechaA - fechaB;
+        });
     },
 
     async obtenerActividadesEvento(eventoId, token) {
@@ -73,101 +71,91 @@ export const agendaService = {
         }
     },
 
-    async obtenerActividadesPorFecha(misInscripciones, token, filtro = 'todas') {
-        try {
-            const todasActividades = await this.obtenerActividadesAgenda(misInscripciones, token);
+    obtenerActividadesPorFecha(misInscripciones, token, filtro = 'todas') {
+        const todasActividades = this.obtenerActividadesAgendaLocal(misInscripciones);
 
-            const hoy = new Date();
-            const hoyFormateado = hoy.toISOString().split('T')[0];
+        const hoy = new Date();
+        const hoyFormateado = hoy.toISOString().split('T')[0];
 
-            const hoyInicio = new Date(hoyFormateado);
-            const hoyFin = new Date(hoyFormateado);
-            hoyFin.setHours(23, 59, 59, 999);
+        const hoyInicio = new Date(hoyFormateado);
+        const hoyFin = new Date(hoyFormateado);
+        hoyFin.setHours(23, 59, 59, 999);
 
-            let actividadesFiltradas = todasActividades;
+        let actividadesFiltradas = todasActividades;
 
-            switch (filtro) {
-                case 'hoy':
-                    actividadesFiltradas = todasActividades.filter(actividad => {
-                        return actividad.fecha_actividad === hoyFormateado;
-                    });
-                    break;
+        switch (filtro) {
+            case 'hoy':
+                actividadesFiltradas = todasActividades.filter(actividad => {
+                    return actividad.fecha_actividad === hoyFormateado;
+                });
+                break;
 
-                case 'semana':
-                    const finSemana = new Date(hoy);
-                    finSemana.setDate(hoy.getDate() + 7);
-                    finSemana.setHours(23, 59, 59, 999);
+            case 'semana':
+                const finSemana = new Date(hoy);
+                finSemana.setDate(hoy.getDate() + 7);
+                finSemana.setHours(23, 59, 59, 999);
 
-                    actividadesFiltradas = todasActividades.filter(actividad => {
-                        const fechaActividad = new Date(actividad.fecha_actividad + 'T00:00:00');
-                        return fechaActividad >= hoyInicio && fechaActividad <= finSemana;
-                    });
-                    break;
+                actividadesFiltradas = todasActividades.filter(actividad => {
+                    const fechaActividad = new Date(actividad.fecha_actividad + 'T00:00:00');
+                    return fechaActividad >= hoyInicio && fechaActividad <= finSemana;
+                });
+                break;
 
-                case 'mes':
-                    const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
-                    finMes.setHours(23, 59, 59, 999);
+            case 'mes':
+                const finMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+                finMes.setHours(23, 59, 59, 999);
 
-                    actividadesFiltradas = todasActividades.filter(actividad => {
-                        const fechaActividad = new Date(actividad.fecha_actividad + 'T00:00:00');
-                        return fechaActividad >= hoyInicio && fechaActividad <= finMes;
-                    });
-                    break;
+                actividadesFiltradas = todasActividades.filter(actividad => {
+                    const fechaActividad = new Date(actividad.fecha_actividad + 'T00:00:00');
+                    return fechaActividad >= hoyInicio && fechaActividad <= finMes;
+                });
+                break;
 
-                case 'proximas':
-                    actividadesFiltradas = todasActividades.filter(actividad => {
-                        const fechaActividad = new Date(actividad.fecha_actividad + 'T' + actividad.hora_inicio);
-                        return fechaActividad >= new Date();
-                    });
-                    break;
+            case 'proximas':
+                actividadesFiltradas = todasActividades.filter(actividad => {
+                    const fechaActividad = new Date(actividad.fecha_actividad + 'T' + actividad.hora_inicio);
+                    return fechaActividad >= new Date();
+                });
+                break;
 
-                case 'pasadas':
-                    actividadesFiltradas = todasActividades.filter(actividad => {
-                        const fechaActividad = new Date(actividad.fecha_actividad + 'T' + actividad.hora_fin);
-                        return fechaActividad < new Date();
-                    });
-                    break;
+            case 'pasadas':
+                actividadesFiltradas = todasActividades.filter(actividad => {
+                    const fechaActividad = new Date(actividad.fecha_actividad + 'T' + actividad.hora_fin);
+                    return fechaActividad < new Date();
+                });
+                break;
 
-                default:
-                    actividadesFiltradas = todasActividades;
-                    break;
-            }
-
-            return actividadesFiltradas;
-
-        } catch (error) {
-            throw error;
+            default:
+                actividadesFiltradas = todasActividades;
+                break;
         }
+
+        return actividadesFiltradas;
     },
 
     async obtenerAgendaAgrupada(misInscripciones, token) {
-        try {
-            const actividades = await this.obtenerActividadesAgenda(misInscripciones, token);
+        const actividades = this.obtenerActividadesAgendaLocal(misInscripciones);
 
-            const agendaPorFecha = {};
-            actividades.forEach(actividad => {
-                const fecha = actividad.fecha_actividad;
-                if (!agendaPorFecha[fecha]) {
-                    agendaPorFecha[fecha] = [];
-                }
-                agendaPorFecha[fecha].push(actividad);
+        const agendaPorFecha = {};
+        actividades.forEach(actividad => {
+            const fecha = actividad.fecha_actividad;
+            if (!agendaPorFecha[fecha]) {
+                agendaPorFecha[fecha] = [];
+            }
+            agendaPorFecha[fecha].push(actividad);
+        });
+
+        const fechasOrdenadas = Object.keys(agendaPorFecha).sort();
+
+        fechasOrdenadas.forEach(fecha => {
+            agendaPorFecha[fecha].sort((a, b) => {
+                const horaA = new Date(`1970-01-01T${a.hora_inicio}`);
+                const horaB = new Date(`1970-01-01T${b.hora_inicio}`);
+                return horaA - horaB;
             });
+        });
 
-            const fechasOrdenadas = Object.keys(agendaPorFecha).sort();
-
-            fechasOrdenadas.forEach(fecha => {
-                agendaPorFecha[fecha].sort((a, b) => {
-                    const horaA = new Date(`1970-01-01T${a.hora_inicio}`);
-                    const horaB = new Date(`1970-01-01T${b.hora_inicio}`);
-                    return horaA - horaB;
-                });
-            });
-
-            return agendaPorFecha;
-
-        } catch (error) {
-            throw error;
-        }
+        return agendaPorFecha;
     },
 
     formatearActividadesEvento(actividades) {
