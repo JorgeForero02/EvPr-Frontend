@@ -109,10 +109,8 @@ export const usePlaces = () => {
       id_ubicacion: ''
     }));
 
-    await Promise.all([
-      fetchLugaresByEmpresa(empresa.id),
-      fetchUbicacionesByEmpresa(empresa.id)
-    ]);
+    await fetchLugaresByEmpresa(empresa.id);
+    await fetchUbicacionesByEmpresa(empresa.id);
   };
 
   const handleFilterChange = async (e) => {

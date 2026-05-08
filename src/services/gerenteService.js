@@ -22,10 +22,8 @@ class GerenteService extends BaseService {
 
   getDashboardStats = async (empresaId) => {
     try {
-      const [team, events] = await Promise.all([
-        this.getTeam(empresaId),
-        eventsAPI.getEventsByEmpresa(empresaId)
-      ]);
+      const team = await this.getTeam(empresaId);
+      const events = await eventsAPI.getEventsByEmpresa(empresaId);
 
       return {
         totalEmpleados: team.length,

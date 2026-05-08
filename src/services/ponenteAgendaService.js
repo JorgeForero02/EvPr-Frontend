@@ -25,7 +25,7 @@ export const ponenteAgendaService = {
             }
 
             const actividades = await this.obtenerActividadesPonente(_ponenteId, _token);
-            const eventos = await this.obtenerEventosPonente(_ponenteId, _token);
+            const eventos = await this.obtenerEventosPonente(_ponenteId, _token, actividades);
 
             return {
                 actividades,
@@ -120,9 +120,9 @@ export const ponenteAgendaService = {
         }
     },
 
-    async obtenerEventosPonente(ponenteId, token) {
+    async obtenerEventosPonente(ponenteId, token, actividadesCache = null) {
         try {
-            const actividades = await this.obtenerActividadesPonente(ponenteId, token);
+            const actividades = actividadesCache || await this.obtenerActividadesPonente(ponenteId, token);
             const eventosMap = new Map();
 
             actividades.forEach(actividad => {

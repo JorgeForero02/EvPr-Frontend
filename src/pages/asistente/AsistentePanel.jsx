@@ -121,8 +121,8 @@ const AsistentePanel = () => {
         };
 
         checkAuth();
-        cargarEventosDisponibles();
-        cargarMisInscripciones();
+        await cargarEventosDisponibles();
+        await cargarMisInscripciones();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

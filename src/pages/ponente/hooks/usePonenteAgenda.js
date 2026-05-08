@@ -71,7 +71,9 @@ export const usePonenteAgenda = () => {
         eventos: agenda.eventos || [],
         estadisticas,
         loading,
+        loadingEventos: loading,
         error,
+        errorEventos: error,
         cargarAgenda,
         refetch: cargarAgenda
     };

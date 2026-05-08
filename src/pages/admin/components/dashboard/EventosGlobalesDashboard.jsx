@@ -61,13 +61,19 @@ const EventosGlobalesDashboard = () => {
     }, []);
 
     useEffect(() => {
-        fetchAuth(`${API_URL}/empresas?incluir_pendientes=true`)
-            .then(data => {
+        const cargarDatos = async () => {
+            try {
+                const data = await fetchAuth(`${API_URL}/empresas?incluir_pendientes=true`);
                 const list = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
                 setEmpresas(list);
-            })
-            .catch(() => setEmpresas([]));
-    }, [fetchAuth, API_URL]);
+            } catch {
+                setEmpresas([]);
+            }
+            fetchEventos(EMPTY_FILTERS);
+        };
+        cargarDatos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const fetchEventos = useCallback(async (activeFilters) => {
         setLoading(true);
@@ -88,11 +94,6 @@ const EventosGlobalesDashboard = () => {
             setLoading(false);
         }
     }, [fetchAuth, API_URL]);
-
-    useEffect(() => {
-        fetchEventos(EMPTY_FILTERS);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     const handleApply = () => {
         const next = { ...filters };

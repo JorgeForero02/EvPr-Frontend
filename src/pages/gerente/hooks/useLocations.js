@@ -43,10 +43,8 @@ export const useLocations = () => {
   const fetchData = async () => {
     try {
       setState(prev => ({ ...prev, loading: true }));
-      await Promise.all([
-        fetchCiudades(),
-        fetchEmpresaUsuario()
-      ]);
+      await fetchCiudades();
+      await fetchEmpresaUsuario();
     } catch (error) {
       showNotification('error', 'Error', 'Error al cargar los datos iniciales');
     } finally {

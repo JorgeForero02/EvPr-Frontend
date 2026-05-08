@@ -129,11 +129,9 @@ export const useAdminDashboard = () => {
     setError(null);
 
     try {
-      const [afiliacionesData, auditoriaData, statsData] = await Promise.all([
-        fetchAfiliacionesData(),
-        fetchAuditoriaData(),
-        fetchSystemStats()
-      ]);
+      const afiliacionesData = await fetchAfiliacionesData();
+      const auditoriaData = await fetchAuditoriaData();
+      const statsData = await fetchSystemStats();
 
       setDashboardData({
         afiliaciones: {

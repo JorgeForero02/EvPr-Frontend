@@ -36,11 +36,9 @@ export const useGerenteDashboard = () => {
       const user = JSON.parse(userData);
       setState(prev => ({ ...prev, user }));
 
-      await Promise.all([
-        loadTeam(user),
-        loadStats(user),
-        loadEmpresa(user)
-      ]);
+      await loadTeam(user);
+      await loadStats(user);
+      await loadEmpresa(user);
 
       setState(prev => ({ ...prev, loading: false }));
 

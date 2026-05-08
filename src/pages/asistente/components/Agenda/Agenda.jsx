@@ -139,19 +139,17 @@ const Agenda = ({ misInscripciones, onRegisterAttendance }) => {
                 throw new Error('No hay token disponible');
             }
 
-            const [detallesActividad, ponentesResponse, detallesEvento] = await Promise.all([
-                fetch(`${API_URL}/actividades/${actividad.id_actividad}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(r => r.json()),
+            const detallesActividad = await fetch(`${API_URL}/actividades/${actividad.id_actividad}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
 
-                fetch(`${API_URL}/ponente-actividad/actividad/${actividad.id_actividad}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(r => r.json()),
+            const ponentesResponse = await fetch(`${API_URL}/ponente-actividad/actividad/${actividad.id_actividad}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
 
-                fetch(`${API_URL}/eventos/${actividad.evento?.id}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                }).then(r => r.json())
-            ]);
+            const detallesEvento = await fetch(`${API_URL}/eventos/${actividad.evento?.id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(r => r.json());
 
             let ponentesProcesados = [];
             if (ponentesResponse.success && ponentesResponse.data && Array.isArray(ponentesResponse.data)) {

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { usePonenteAgenda } from '../hooks/usePonenteAgenda';
-import { useEventosActividadesAceptadas } from '../hooks/useEventosActividadesAceptadas';
 import Sidebar from '../../../layouts/Sidebar/sidebarPonente/sidebar';
 import Header from '../../../layouts/Header/header';
 import DashboardSection from '../components/sections/DashboardSection';
@@ -27,13 +26,7 @@ const PonenteDashboard = () => {
 
   const { user } = useAuth();
 
-  const { actividades, loading, error, refetch } = usePonenteAgenda();
-
-  const {
-    eventos: eventosAceptados,
-    loading: loadingEventos,
-    error: errorEventos
-  } = useEventosActividadesAceptadas();
+  const { actividades, eventos: eventosAceptados, loading, error, loadingEventos, errorEventos, refetch } = usePonenteAgenda();
 
   const obtenerIdPonente = () => {
     if (!user) return null;

@@ -3,10 +3,8 @@ import { authService } from './api/authService';
 
 export class AdminService extends BaseService {
   async getDashboardData() {
-    const [afiliaciones, auditoria] = await Promise.all([
-      this.getAfiliaciones(),
-      this.getAuditoria()
-    ]);
+    const afiliaciones = await this.getAfiliaciones();
+    const auditoria = await this.getAuditoria();
 
     return {
       afiliaciones: this.processAfiliacionesData(afiliaciones),

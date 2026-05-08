@@ -127,11 +127,8 @@ const Ubicaciones = () => {
                 return;
             }
 
-            await Promise.all([
-                fetchCiudades(token),
-                fetchEmpresaUsuario(token)
-
-            ]);
+            await fetchCiudades(token);
+            await fetchEmpresaUsuario(token);
         } catch (error) {
         } finally {
             setLoading(false);
@@ -458,10 +455,8 @@ const Ubicaciones = () => {
             if (result.success) {
                 showNotification('success', 'Éxito', 'Ubicación actualizada exitosamente');
                 closeAllModals();
-                await Promise.all([
-                    fetchCiudades(token),
-                    fetchUbicacionesByEmpresa(empresa.id, token)
-                ]);
+                await fetchCiudades(token);
+                await fetchUbicacionesByEmpresa(empresa.id, token);
             } else {
                 showNotification('error', 'Error', `Error al actualizar ubicación: ${result.message || 'Error desconocido'}`);
             }

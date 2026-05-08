@@ -24,7 +24,8 @@ const PresupuestoItemsPage = () => {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
-    Promise.all([fetchItems(), fetchActividades()]);
+    fetchItems();
+    fetchActividades();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventoId]);
 
