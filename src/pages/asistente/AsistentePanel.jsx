@@ -182,7 +182,7 @@ const AsistentePanel = () => {
         }
 
         const estado = getEventStatus(evento, eventosInscritos);
-        if (estado.texto !== 'DISPONIBLE' && estado.texto !== 'POR COMENZAR' && estado.texto !== 'PRÓXIMO') {
+        if (estado.texto !== 'POR COMENZAR' && estado.texto !== 'PRÓXIMO') {
             showSnackbar('No es posible inscribirse en este evento porque está lleno o cerrado.', 'warning');
             return;
         }
