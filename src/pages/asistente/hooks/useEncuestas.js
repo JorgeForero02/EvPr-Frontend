@@ -70,21 +70,21 @@ export const useEncuestas = () => {
                 let encuestasFiltradas = todasLasEncuestas.filter(encuesta => {
                     if (tipoEncuesta === 'satisfaccion_evento') {
                         return encuesta.tipo_encuesta === 'satisfaccion_evento' &&
-                            encuesta.id_evento === eventoId &&
+                            String(encuesta.id_evento) === String(eventoId) &&
                             encuesta.id_actividad === null;
                     }
 
                     if (tipoEncuesta && tipoEncuesta !== 'satisfaccion_evento') {
                         if (actividadId) {
                             return encuesta.tipo_encuesta === tipoEncuesta &&
-                                encuesta.id_actividad === actividadId;
+                                String(encuesta.id_actividad) === String(actividadId);
                         } else {
                             return encuesta.tipo_encuesta === tipoEncuesta;
                         }
                     }
 
                     if (actividadId) {
-                        return encuesta.id_actividad === actividadId;
+                        return String(encuesta.id_actividad) === String(actividadId);
                     }
 
                     return true;
@@ -100,7 +100,7 @@ export const useEncuestas = () => {
 
                         const respuestasExistentes = encuesta.respuestas || [];
                         const respuestaExistenteIndex = respuestasExistentes.findIndex(
-                            r => r.id_asistente === userId
+                            r => String(r.id_asistente) === String(userId)
                         );
 
                         if (respuestaExistenteIndex >= 0) {
@@ -122,7 +122,7 @@ export const useEncuestas = () => {
                                         estado: 'completada',
                                         fecha_completado: new Date().toISOString(),
                                         id_encuesta: encuesta.id,
-                                        id_asistente: userId
+                                        id_asistente: parseInt(userId)
                                     }
                                 ]
                             };
@@ -180,14 +180,14 @@ export const useEncuestas = () => {
 
                         const respuestasExistentes = encuesta.respuestas || [];
                         const respuestaExistenteIndex = respuestasExistentes.findIndex(
-                            r => r.id_asistente === userId
+                            r => String(r.id_asistente) === String(userId)
                         );
 
                         const nuevaRespuesta = {
                             estado: 'completada',
                             fecha_completado: new Date().toISOString(),
                             id_encuesta: idEncuesta,
-                            id_asistente: userId
+                            id_asistente: parseInt(userId)
                         };
 
                         let nuevasRespuestas;
@@ -250,7 +250,7 @@ export const useEncuestas = () => {
         }
 
         const respuestaAsistente = encuesta.respuestas.find(
-            respuesta => respuesta.id_asistente === userId
+            respuesta => String(respuesta.id_asistente) === String(userId)
         );
 
         if (process.env.NODE_ENV === 'development') console.log({ userId, respuesta: respuestaAsistente });
