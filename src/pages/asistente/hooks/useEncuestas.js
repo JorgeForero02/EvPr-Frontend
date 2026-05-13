@@ -75,22 +75,35 @@ export const useEncuestas = () => {
                 let encuestasFiltradas = todasLasEncuestas.filter(encuesta => {
                     if (tipoEncuesta === 'satisfaccion_evento') {
                         return encuesta.tipo_encuesta === 'satisfaccion_evento' &&
+<<<<<<< HEAD
                             eqId(encuesta.id_evento, eventoId) &&
+=======
+                            String(encuesta.id_evento) === String(eventoId) &&
+>>>>>>> 08db0ba9dac7987b2c1fcebc96d22f3344c4eff8
                             encuesta.id_actividad === null;
                     }
 
                     if (tipoEncuesta && tipoEncuesta !== 'satisfaccion_evento') {
                         if (actividadId != null && actividadId !== '') {
                             return encuesta.tipo_encuesta === tipoEncuesta &&
+<<<<<<< HEAD
                                 eqId(encuesta.id_actividad, actividadId);
+=======
+                                String(encuesta.id_actividad) === String(actividadId);
+>>>>>>> 08db0ba9dac7987b2c1fcebc96d22f3344c4eff8
                         } else {
                             return encuesta.tipo_encuesta === tipoEncuesta;
                         }
                     }
 
+<<<<<<< HEAD
                     if (actividadId != null && actividadId !== '') {
                         return eqId(encuesta.id_actividad, actividadId) ||
                             (encuesta.tipo_encuesta === 'satisfaccion_evento' && encuesta.id_actividad === null);
+=======
+                    if (actividadId) {
+                        return String(encuesta.id_actividad) === String(actividadId);
+>>>>>>> 08db0ba9dac7987b2c1fcebc96d22f3344c4eff8
                     }
 
                     return true;
@@ -106,7 +119,11 @@ export const useEncuestas = () => {
 
                         const respuestasExistentes = encuesta.respuestas || [];
                         const respuestaExistenteIndex = respuestasExistentes.findIndex(
+<<<<<<< HEAD
                             r => eqId(r.id_asistente, userId)
+=======
+                            r => String(r.id_asistente) === String(userId)
+>>>>>>> 08db0ba9dac7987b2c1fcebc96d22f3344c4eff8
                         );
 
                         if (respuestaExistenteIndex >= 0) {
@@ -128,7 +145,7 @@ export const useEncuestas = () => {
                                         estado: 'completada',
                                         fecha_completado: new Date().toISOString(),
                                         id_encuesta: encuesta.id,
-                                        id_asistente: userId
+                                        id_asistente: parseInt(userId)
                                     }
                                 ]
                             };
@@ -186,14 +203,18 @@ export const useEncuestas = () => {
 
                         const respuestasExistentes = encuesta.respuestas || [];
                         const respuestaExistenteIndex = respuestasExistentes.findIndex(
+<<<<<<< HEAD
                             r => eqId(r.id_asistente, userId)
+=======
+                            r => String(r.id_asistente) === String(userId)
+>>>>>>> 08db0ba9dac7987b2c1fcebc96d22f3344c4eff8
                         );
 
                         const nuevaRespuesta = {
                             estado: 'completada',
                             fecha_completado: new Date().toISOString(),
                             id_encuesta: idEncuesta,
-                            id_asistente: userId
+                            id_asistente: parseInt(userId)
                         };
 
                         let nuevasRespuestas;
@@ -256,7 +277,11 @@ export const useEncuestas = () => {
         }
 
         const respuestaAsistente = encuesta.respuestas.find(
+<<<<<<< HEAD
             respuesta => eqId(respuesta.id_asistente, userId)
+=======
+            respuesta => String(respuesta.id_asistente) === String(userId)
+>>>>>>> 08db0ba9dac7987b2c1fcebc96d22f3344c4eff8
         );
 
         if (process.env.NODE_ENV === 'development') console.log({ userId, respuesta: respuestaAsistente });
