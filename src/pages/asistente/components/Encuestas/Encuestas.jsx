@@ -155,7 +155,9 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
             }
 
             if (actividadesDelEvento.length > 0 && !actividadSeleccionada) {
-                const primeraActividadId = actividadesDelEvento[0].id_actividad.toString();
+                const primeraActividadId = actividadesDelEvento[0].id_actividad != null
+                    ? actividadesDelEvento[0].id_actividad.toString()
+                    : '';
                 setActividadSeleccionada(primeraActividadId);
             } else if (actividadesDelEvento.length === 0) {
                 setActividadSeleccionada('');
@@ -183,7 +185,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
                 tipoEncuesta: filtroTipo || null
             };
 
-            if (filtroTipo !== 'satisfaccion_evento' && actividadSeleccionada) {
+            if (filtroTipo !== 'satisfaccion_evento' && actividadSeleccionada && actividadSeleccionada !== 'null') {
                 opcionesBusqueda.actividadId = actividadSeleccionada;
             }
 
@@ -194,9 +196,9 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
                 setEventoNombre(evento.titulo);
             }
 
-            if (actividadSeleccionada && filtroTipo !== 'satisfaccion_evento') {
+            if (actividadSeleccionada && actividadSeleccionada !== 'null' && filtroTipo !== 'satisfaccion_evento') {
                 const actividad = actividadesFiltradas.find(
-                    a => a.id_actividad.toString() === actividadSeleccionada.toString()
+                    a => (a.id_actividad != null ? a.id_actividad.toString() : '') === actividadSeleccionada.toString()
                 );
                 if (actividad) {
                     setActividadNombre(actividad.titulo);
@@ -368,7 +370,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
                         >
                             <option value="">Seleccionar actividad</option>
                             {actividadesFiltradas.map(actividad => (
-                                <option key={actividad.id_actividad} value={actividad.id_actividad}>
+                                <option key={actividad.id_actividad ?? `evt-${actividad.id_evento}`} value={actividad.id_actividad ?? ''}>
                                     {actividad.titulo} - {formatFecha(actividad.fecha_actividad || actividad.evento_fecha_inicio)}
                                 </option>
                             ))}

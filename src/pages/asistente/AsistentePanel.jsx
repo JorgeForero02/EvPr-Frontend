@@ -271,21 +271,37 @@ const AsistentePanel = () => {
 
             for (const inscripcion of misInscripciones) {
                 const evento = inscripcion.evento;
-                if (!evento?.actividades) continue;
+                if (!evento) continue;
 
-                for (const actividad of evento.actividades) {
+                if (evento.actividades && evento.actividades.length > 0) {
+                    for (const actividad of evento.actividades) {
+                        actividades.push({
+                            id_actividad: actividad.id_actividad,
+                            titulo: actividad.titulo,
+                            fecha_actividad: actividad.fecha_actividad,
+                            hora_inicio: actividad.hora_inicio,
+                            hora_fin: actividad.hora_fin,
+                            descripcion: actividad.descripcion,
+                            id_evento: evento.id,
+                            evento_titulo: evento.titulo,
+                            evento_fecha_inicio: evento.fecha_inicio,
+                            evento_fecha_fin: evento.fecha_fin,
+                            lugares: actividad.lugares || []
+                        });
+                    }
+                } else {
                     actividades.push({
-                        id_actividad: actividad.id_actividad,
-                        titulo: actividad.titulo,
-                        fecha_actividad: actividad.fecha_actividad,
-                        hora_inicio: actividad.hora_inicio,
-                        hora_fin: actividad.hora_fin,
-                        descripcion: actividad.descripcion,
+                        id_actividad: null,
+                        titulo: 'Evento General',
+                        fecha_actividad: evento.fecha_inicio,
+                        hora_inicio: null,
+                        hora_fin: null,
+                        descripcion: null,
                         id_evento: evento.id,
                         evento_titulo: evento.titulo,
                         evento_fecha_inicio: evento.fecha_inicio,
                         evento_fecha_fin: evento.fecha_fin,
-                        lugares: actividad.lugares || []
+                        lugares: []
                     });
                 }
             }
@@ -293,7 +309,9 @@ const AsistentePanel = () => {
             setActividadesDisponibles(actividades);
 
             if (actividades.length > 0 && !selectedActividad) {
-                const primeraActividadId = actividades[0].id_actividad.toString();
+                const primeraActividadId = actividades[0].id_actividad != null
+                    ? actividades[0].id_actividad.toString()
+                    : '';
                 setSelectedActividad(primeraActividadId);
             }
         } catch (error) {

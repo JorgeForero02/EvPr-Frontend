@@ -2,6 +2,11 @@ import { useState, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import encuestaService from '../../../services/encuestaService';
 
+const eqId = (a, b) => {
+    if (a == null || b == null) return false;
+    return String(a) === String(b);
+};
+
 export const useEncuestas = () => {
     const [encuestas, setEncuestas] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -70,21 +75,22 @@ export const useEncuestas = () => {
                 let encuestasFiltradas = todasLasEncuestas.filter(encuesta => {
                     if (tipoEncuesta === 'satisfaccion_evento') {
                         return encuesta.tipo_encuesta === 'satisfaccion_evento' &&
-                            encuesta.id_evento === eventoId &&
+                            eqId(encuesta.id_evento, eventoId) &&
                             encuesta.id_actividad === null;
                     }
 
                     if (tipoEncuesta && tipoEncuesta !== 'satisfaccion_evento') {
-                        if (actividadId) {
+                        if (actividadId != null && actividadId !== '') {
                             return encuesta.tipo_encuesta === tipoEncuesta &&
-                                encuesta.id_actividad === actividadId;
+                                eqId(encuesta.id_actividad, actividadId);
                         } else {
                             return encuesta.tipo_encuesta === tipoEncuesta;
                         }
                     }
 
-                    if (actividadId) {
-                        return encuesta.id_actividad === actividadId;
+                    if (actividadId != null && actividadId !== '') {
+                        return eqId(encuesta.id_actividad, actividadId) ||
+                            (encuesta.tipo_encuesta === 'satisfaccion_evento' && encuesta.id_actividad === null);
                     }
 
                     return true;
@@ -100,7 +106,7 @@ export const useEncuestas = () => {
 
                         const respuestasExistentes = encuesta.respuestas || [];
                         const respuestaExistenteIndex = respuestasExistentes.findIndex(
-                            r => r.id_asistente === userId
+                            r => eqId(r.id_asistente, userId)
                         );
 
                         if (respuestaExistenteIndex >= 0) {
@@ -180,7 +186,7 @@ export const useEncuestas = () => {
 
                         const respuestasExistentes = encuesta.respuestas || [];
                         const respuestaExistenteIndex = respuestasExistentes.findIndex(
-                            r => r.id_asistente === userId
+                            r => eqId(r.id_asistente, userId)
                         );
 
                         const nuevaRespuesta = {
@@ -250,7 +256,7 @@ export const useEncuestas = () => {
         }
 
         const respuestaAsistente = encuesta.respuestas.find(
-            respuesta => respuesta.id_asistente === userId
+            respuesta => eqId(respuesta.id_asistente, userId)
         );
 
         if (process.env.NODE_ENV === 'development') console.log({ userId, respuesta: respuestaAsistente });
