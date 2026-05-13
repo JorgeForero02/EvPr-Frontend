@@ -109,7 +109,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
         setIdAsistente(asistenteId);
 
         if (!asistenteId) {
-            mostrarAlertaError('No se pudo identificar tu cuenta. Por favor, cierra sesiÃ³n y vuelve a iniciar.');
+            mostrarAlertaError('No se pudo identificar tu cuenta. Por favor, cierra sesión y vuelve a iniciar.');
         }
     }, []);
 
@@ -216,7 +216,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
         { value: 'pre_actividad', label: 'Pre Actividad' },
         { value: 'durante_actividad', label: 'Durante Actividad' },
         { value: 'post_actividad', label: 'Post Actividad' },
-        { value: 'satisfaccion_evento', label: 'SatisfacciÃ³n Evento' }
+        { value: 'satisfaccion_evento', label: 'Satisfacción Evento' }
     ];
 
     const handleAccederEncuesta = (encuesta) => {
@@ -231,7 +231,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
     const confirmarCompletar = async () => {
         try {
             if (!idAsistente) {
-                throw new Error('No se pudo identificar tu cuenta. Por favor, recarga la pÃ¡gina.');
+                throw new Error('No se pudo identificar tu cuenta. Por favor, recarga la página.');
             }
 
             await marcarComoCompletada(encuestaSeleccionada.id);
@@ -285,7 +285,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
             case 'pre_actividad': return 'Pre Actividad';
             case 'durante_actividad': return 'Durante Actividad';
             case 'post_actividad': return 'Post Actividad';
-            case 'satisfaccion_evento': return 'SatisfacciÃ³n Evento';
+            case 'satisfaccion_evento': return 'Satisfacción Evento';
             default: return tipo;
         }
     };
@@ -300,7 +300,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
 
     const getTituloSeccion = () => {
         if (filtroTipo === 'satisfaccion_evento') {
-            return `Encuestas de SatisfacciÃ³n del Evento: ${eventoNombre}`;
+            return `Encuestas de Satisfacción del Evento: ${eventoNombre}`;
         } else if (actividadSeleccionada && actividadNombre) {
             return `Encuestas de la Actividad: ${actividadNombre}`;
         } else if (eventoNombre) {
@@ -313,7 +313,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
         return (
             <div className="flex flex-col items-center justify-center py-16 text-center">
                 <h3 className="text-slate-700 font-semibold">No hay actividades disponibles</h3>
-                <p className="text-sm text-slate-400 mt-1">No estÃ¡s inscrito en ningÃºn evento o los eventos no tienen actividades asignadas.</p>
+                <p className="text-sm text-slate-400 mt-1">No estás inscrito en ningún evento o los eventos no tienen actividades asignadas.</p>
             </div>
         );
     }
@@ -324,7 +324,7 @@ const Encuestas = ({ actividadesDisponibles = [], cargandoActividades = false })
             {mostrarAlerta && (
                 <div className={`flex items-center justify-between px-4 py-3 rounded-lg border text-sm ${tipoAlerta === 'success' ? 'bg-success/10 border-success/20 text-success' : 'bg-danger/10 border-danger/20 text-danger'}`}>
                     <span>{mensajeAlerta}</span>
-                    <button onClick={cerrarAlerta} className="ml-3 text-lg leading-none opacity-60 hover:opacity-100">Ã—</button>
+                    <button onClick={cerrarAlerta} className="ml-3 text-lg leading-none opacity-60 hover:opacity-100">×</button>
                 </div>
             )}
 
